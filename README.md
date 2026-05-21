@@ -38,12 +38,29 @@ This pipeline solves that problem by using a multi-layered guidance system opera
 
 ---
 
+## Showcase: Before & After Example
+
+Here is an example execution of the pipeline converting an input composition reference into a fully stylized illustration:
+
+| Input Subject Reference | Final Pipeline Output |
+| :---: | :---: |
+| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output.png) |
+
+### Prompt Engineering Configuration
+* **Positive Prompt (EasyLoader):**
+  > `highly detailed anime face, portrait, beautiful expressive eyes, masterpiece, dynamic dancing pose, white athletic wear`
+* **Negative Prompt (EasyLoader):**
+  > `lowres, bad anatomy, worst quality, low quality, bad face, mutated, extra fingers, disfigured, blurry`
+
+---
+
 ## The Mathematics of Image-to-Image & Control Guidance
 
 In standard text-to-image (txt2img), generation starts with pure Gaussian noise $$z_T \sim \mathcal{N}(0, I)$$ and iteratively denoises it over $T$ steps. In image-to-image (img2img), we begin by encoding our source image $x$ into the latent space using a Variational Autoencoder (VAE) encoder, yielding $z_0 = 	ext{VAEEncode}(x)$.
 
 We then inject noise up to an intermediate step $t_{start}$ dictated by the **denoise strength** $d \in [0, 1]$. Let $N_{total}$ be the total steps configured. The actual executed sampling steps $N_{exec}$ are calculated as:
-$$N_{exec} = \lfloor N_{total} 	imes d floor$$
+$$N_{exec} = \lfloor N_{total} 	imes d 
+floor$$
 During these executed steps, the model predicts the noise $\epsilon_	heta$ at each step $t$. Our workflow modifies this noise prediction by applying simultaneous conditioning inputs: text prompts ($c_{text}$), structural control signals ($c_{control}$), and facial image embeddings ($E_{img}$). This combined cross-attention mechanism can be abstractly represented as:
 $$	ilde{\epsilon}_	heta(z_t, c_{text}, c_{control}, E_{img}) = \epsilon_	heta(z_t, c_{text} + w_{ip}E_{img}) + w_{control}	ext{ControlNet}(z_t, c_{control})$$
 where:
@@ -215,22 +232,6 @@ Because neural upscalers and diffusion models leave smooth digital signatures, s
 Below is the layout map of the engineered ComfyUI interface workspace:
 
 ![ComfyUI Full Workflow](./images/comfyui_workflow_full.png)
-
----
-
-## Showcase: Before & After Example
-
-Here is an example execution of the pipeline converting an input composition reference into a fully stylized illustration:
-
-| Input Subject Reference | Final Pipeline Output |
-| :---: | :---: |
-| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output.png) |
-
-### Prompt Engineering Configuration
-* **Positive Prompt (EasyLoader):**
-  > `highly detailed anime face, portrait, beautiful expressive eyes, masterpiece, dynamic dancing pose, white athletic wear`
-* **Negative Prompt (EasyLoader):**
-  > `lowres, bad anatomy, worst quality, low quality, bad face, mutated, extra fingers, disfigured, blurry`
 
 ---
 
