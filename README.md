@@ -16,8 +16,8 @@ Here is an example execution of the pipeline converting an input composition ref
 
 | Input Subject Reference | Final Pipeline Output |
 | :---: | :---: |
-| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output_.png) |
-| ![Input Reference](./images/example_input3.png) | ![Stylized Output](./images/example_output3_.png) |
+| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output.png) |
+| ![Input Reference](./images/example_input3.png) | ![Stylized Output](./images/example_output3.png) |
 
 ### Prompt Engineering Configuration
 * **Positive Prompt (EasyLoader):**
