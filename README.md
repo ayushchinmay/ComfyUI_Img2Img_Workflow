@@ -10,30 +10,31 @@ To bypass the typical "AI artifacts" of distorted hands and warped faces, the pi
 
 ---
 
+## Showcase: Before & After Example
+
+Here is an example execution of the pipeline converting an input composition reference into a fully stylized illustration:
+
+| Input Subject Reference | Final Pipeline Output |
+| :---: | :---: |
+| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output_.png) |
+
+### Prompt Engineering Configuration
+* **Positive Prompt (EasyLoader):**
+  > `masterpiece, newest, absurdres, incredibly absurdres, best quality, amazing quality, very aesthetic, highly detailed anime style, vibrant cel shading, expressive eyes, crisp lineart, colorful aesthetic`
+* **Negative Prompt (EasyLoader):**
+  > `lowres, bad anatomy, worst quality, low quality, normal quality, bad hands, mutated, extra fingers, artifacts, disfigured, photorealistic, hyperrealistic, 3d render, real life, text, error, blurry`
+
+---
+
 ## Workflow Architecture Overview
 
 The core philosophy of this workflow is **guided constraint**. Standard image-to-image translation often suffers from a trade-off: denoise too low, and the image doesn't stylize; denoise too high, and you lose the pose, the clothing details, and the subject's face. 
 
-This pipeline solves that problem by using a multi-layered guidance system operating across different spatial and conceptual domains, supplemented by an automated **Pre-Attention Face Isolation** stage that maximizes identity accuracy while leaving the checkpoint model unconstrained:
+This pipeline solves that problem by using a multi-layered guidance system operating across different spatial and conceptual domains, supplemented by an automated **Pre-Attention Face Isolation** stage that maximizes identity accuracy while leaving the checkpoint model unconstrained.
 
-```
-[Input Image] 
-   │
-   ├─► [Depth Anything V2] ──► [ControlNet Stack] ┐
-   ├─► [AnyLine Lineart] ────► [ControlNet Stack] ├─► [EasyKSampler (Base)]
-   │                                              │          │
-   ├─► [YOLO Face Detector] ──► [4x-UltraSharp]   │          ▼
-   │            │                       │         │   [Raw Stylized Image]
-   │            └─► [Face Tile Crop] ───┴─► [IP-Adapter FaceID] ┘     │
-   │                                                                 │
-   └─► [Latent Image (Denoise 0.65)] ────────────────────────────────┘
-                                                                     │
-   ┌─────────────────────────────────────────────────────────────────┘
-   ▼
-[YOLO Detector (Face/Hand)] ──► [Face/Hand Detailers] ──► [Upscale & Grain] ──► [Final Output]
-                                                                  │
-                                                        [Visual Diagnostic Seq]
-```
+Below is the complete layout map of the engineered ComfyUI interface workspace showing the entire node architecture:
+
+![ComfyUI Full Workflow](./images/comfyui_workflow_full.png)
 
 1. **Compositional Guidance (Depth & Lineart):** *Depth Anything V2* establishes the structural boundaries and 3D volume, while *AnyLine Lineart* captures fine details (wrinkles, boundaries, hair strands).
 2. **Pre-Attention Face Isolation & Upscaling:** Rather than feeding the full, uncropped canvas to the identity network, a dedicated YOLO node isolates the face bounding box and upscales it dynamically via *4x-UltraSharp*. This delivers an ultra-clean, high-frequency crop directly to the encoder.
@@ -256,30 +257,6 @@ To turn the pipeline into a transparent, audit-ready environment, I engineered a
 * **DENOISE:** Previews the raw, un-detailed output straight from the base KSampler, isolating the core diffusion pass performance.
 * **DETAIL FACE:** Displays the face immediately following the localized *FaceDetailer* inpainting block, highlighting facial artifact adjustments.
 * **DETAIL HANDS:** Previews the restored hand geometries coming out of the *HandDetailer*, allowing immediate anatomical checks.
-
----
-
-## Complete Workspace Map
-
-Below is the layout map of the engineered ComfyUI interface workspace:
-
-![ComfyUI Full Workflow](./images/comfyui_workflow_full.png)
-
----
-
-## Showcase: Before & After Example
-
-Here is an example execution of the pipeline converting an input composition reference into a fully stylized illustration:
-
-| Input Subject Reference | Final Pipeline Output |
-| :---: | :---: |
-| ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output_.png) |
-
-### Prompt Engineering Configuration
-* **Positive Prompt (EasyLoader):**
-  > `masterpiece, newest, absurdres, incredibly absurdres, best quality, amazing quality, very aesthetic, highly detailed anime style, vibrant cel shading, expressive eyes, crisp lineart, colorful aesthetic`
-* **Negative Prompt (EasyLoader):**
-  > `lowres, bad anatomy, worst quality, low quality, normal quality, bad hands, mutated, extra fingers, artifacts, disfigured, photorealistic, hyperrealistic, 3d render, real life, text, error, blurry`
 
 ---
 
