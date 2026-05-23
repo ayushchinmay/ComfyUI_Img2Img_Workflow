@@ -17,6 +17,7 @@ Here is an example execution of the pipeline converting an input composition ref
 | Input Subject Reference | Final Pipeline Output |
 | :---: | :---: |
 | ![Input Reference](./images/example_input.png) | ![Stylized Output](./images/example_output_.png) |
+| ![Input Reference](./images/example_input3.png) | ![Stylized Output](./images/example_output3_.png) |
 
 ### Prompt Engineering Configuration
 * **Positive Prompt (EasyLoader):**
@@ -54,7 +55,8 @@ and iteratively denoises it over $T$ steps. In image-to-image (img2img), we begi
 $$z_0 = 	ext{VAEEncode}(x)$$
 
 We then inject noise up to an intermediate step $t_{	ext{start}}$ dictated by the **denoise strength** $d \in [0,1]$. Let $N_{	ext{total}}$ be the total steps configured. The actual executed sampling steps $N_{	ext{exec}}$ are calculated as:
-$$N_{	ext{exec}} = \lfloor N_{	ext{total}} 	imes d floor$$
+$$N_{	ext{exec}} = \lfloor N_{	ext{total}} 	imes d 
+floor$$
 
 During these executed steps, the model predicts the noise $\epsilon_	heta$ at each step $t$. Our workflow modifies this noise prediction by applying simultaneous conditioning inputs: text prompts ($c_{	ext{text}}$), structural control signals ($c_{	ext{control}}$), and facial image embeddings ($E_{	ext{img}}$). This combined cross-attention mechanism can be abstractly represented as:
 $$	ilde{\epsilon}_	heta(z_t, c_{	ext{text}}, c_{	ext{control}}, E_{	ext{img}}) = \epsilon_	heta(z_t, c_{	ext{text}} + w_{	ext{ip}}E_{	ext{img}}) + w_{	ext{control}}	ext{ControlNet}(z_t, c_{	ext{control}})$$
